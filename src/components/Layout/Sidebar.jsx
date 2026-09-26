@@ -43,7 +43,7 @@ const Sidebar = ({ isOpen, onToggle }) => {
         } hidden lg:flex lg:flex-col`}
       >
         <div className="p-6 flex items-center gap-3 border-b border-gray-800">
-          <img src="/warehouse_logo.png" alt="Logo" className="w-10 h-10 object-contain rounded-lg bg-blue-50/10 p-1" />
+          <img src={`${import.meta.env.BASE_URL}warehouse_logo.png`} alt="Logo" className="w-10 h-10 object-contain rounded-lg bg-blue-50/10 p-1" />
           <div>
             <h1 className="text-lg font-bold leading-tight">WH Tracker</h1>
             <p className="text-xs text-gray-400">ระบบคลังสินค้า</p>
