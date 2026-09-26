@@ -56,7 +56,7 @@ const Sidebar = ({ isOpen, onToggle }) => {
             <RoleIcon className={`w-4 h-4 ${roleColor}`} />
             <span className={`text-xs font-medium ${roleColor}`}>{roleLabel}</span>
           </div>
-          <p className="text-xs text-gray-500 mt-1">{currentUser?.username}</p>
+          <p className="text-xs text-gray-500 mt-1">{currentUser?.displayName}</p>
         </div>
 
         <nav className="px-4 space-y-2 mt-4 flex-1">
