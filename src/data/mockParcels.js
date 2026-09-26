@@ -12,6 +12,20 @@ export const PRIORITY_CONFIG = {
   urgent: { label: 'ด่วนมาก', color: 'red' },
 }
 
+export function createParcel(data) {
+  const defaults = {
+    status: 'received',
+    location: { zone: 'A', row: 1, shelf: 1, slot: 1 },
+    weight: 1.0,
+    dimensions: '30x20x15',
+    category: 'อื่นๆ',
+    priority: 'normal',
+    receivedAt: new Date().toISOString()
+  };
+  const trackingNumber = `TH-${new Date().getFullYear()}-${Math.floor(10000 + Math.random() * 90000)}`;
+  return { trackingNumber, ...defaults, ...data };
+}
+
 export const parcels = [
   {
     id: 'P001',

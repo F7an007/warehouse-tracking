@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useParcelContext } from '../context/ParcelContext';
 import StatusBadge from '../components/UI/StatusBadge';
-import { Download, ChevronLeft, ChevronRight } from 'lucide-react';
+import ImportParcelForm from '../components/UI/ImportParcelForm';
+import ExportParcelPDF from '../components/UI/ExportParcelPDF';
+import { ChevronLeft, ChevronRight, FileDown } from 'lucide-react';
 import { PRIORITY_CONFIG } from '../data/mockParcels';
 
 export default function ParcelList() {
@@ -55,17 +57,21 @@ export default function ParcelList() {
 
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-6">
+      {/* Header with Import & Export buttons side by side */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">รายการพัสดุ</h1>
           <p className="text-gray-500">พบ {filtered.length} รายการ</p>
         </div>
-        <button className="flex items-center gap-2 bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 min-h-[48px]">
-          <Download size={20} />
-          ส่งออกข้อมูล (Export)
-        </button>
+        <div className="flex items-center gap-3">
+          <ExportParcelPDF parcels={filtered} label="ส่งออกทั้งหมด (PDF)" />
+        </div>
       </div>
 
+      {/* Import Parcel Form */}
+      <ImportParcelForm />
+
+      {/* Filters */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6 space-y-4">
         <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
           <div className="space-y-3 flex-1">
@@ -112,6 +118,7 @@ export default function ParcelList() {
               <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ตำแหน่ง</th>
               <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">หมวดหมู่</th>
               <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">วันที่รับเข้า</th>
+              <th className="px-4 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">PDF</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -128,10 +135,13 @@ export default function ParcelList() {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{parcel.category}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(parcel.receivedAt || parcel.receivedDate).toLocaleDateString('th-TH')}</td>
+                <td className="px-4 py-4 text-center">
+                  <ExportParcelPDF parcel={parcel} variant="icon" />
+                </td>
               </tr>
             ))}
             {paginated.length === 0 && (
-              <tr><td colSpan="6" className="px-6 py-12 text-center text-gray-500">ไม่พบข้อมูลพัสดุ</td></tr>
+              <tr><td colSpan="7" className="px-6 py-12 text-center text-gray-500">ไม่พบข้อมูลพัสดุ</td></tr>
             )}
           </tbody>
         </table>
@@ -140,16 +150,21 @@ export default function ParcelList() {
       {/* Mobile Card View */}
       <div className="lg:hidden space-y-4">
         {paginated.map(parcel => (
-          <div key={parcel.trackingNumber} onClick={() => navigate(`/parcel/${parcel.trackingNumber}`)} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col cursor-pointer hover:shadow-md transition-shadow">
-            <div className="flex justify-between items-start mb-2">
-              <h3 className="font-bold text-lg text-blue-600">{parcel.trackingNumber}</h3>
-              <StatusBadge status={parcel.status} />
+          <div key={parcel.trackingNumber} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col cursor-pointer hover:shadow-md transition-shadow">
+            <div onClick={() => navigate(`/parcel/${parcel.trackingNumber}`)}>
+              <div className="flex justify-between items-start mb-2">
+                <h3 className="font-bold text-lg text-blue-600">{parcel.trackingNumber}</h3>
+                <StatusBadge status={parcel.status} />
+              </div>
+              <div className="text-sm mb-1 text-gray-700">จาก: {parcel.senderName || parcel.sender?.name}</div>
+              <div className="text-sm mb-3 text-gray-700">ถึง: {parcel.recipientName || parcel.recipient?.name}</div>
+              <div className="flex justify-between items-center text-xs text-gray-500 pt-3 border-t border-gray-50">
+                <span>{parcel.status === 'shipped' ? 'นำออกแล้ว' : parcel.location ? `โซน ${parcel.location.zone} - ${parcel.location.row}/${parcel.location.shelf}` : 'ยังไม่จัดเก็บ'}</span>
+                <span>{new Date(parcel.receivedAt || parcel.receivedDate).toLocaleDateString('th-TH')}</span>
+              </div>
             </div>
-            <div className="text-sm mb-1 text-gray-700">จาก: {parcel.senderName || parcel.sender?.name}</div>
-            <div className="text-sm mb-3 text-gray-700">ถึง: {parcel.recipientName || parcel.recipient?.name}</div>
-            <div className="flex justify-between items-center text-xs text-gray-500 pt-3 border-t border-gray-50">
-              <span>{parcel.status === 'shipped' ? 'นำออกแล้ว' : parcel.location ? `โซน ${parcel.location.zone} - ${parcel.location.row}/${parcel.location.shelf}` : 'ยังไม่จัดเก็บ'}</span>
-              <span>{new Date(parcel.receivedAt || parcel.receivedDate).toLocaleDateString('th-TH')}</span>
+            <div className="mt-3 pt-3 border-t border-gray-100 flex justify-end">
+              <ExportParcelPDF parcel={parcel} variant="icon" />
             </div>
           </div>
         ))}

@@ -44,6 +44,8 @@ const parcelReducer = (state, action) => {
         }
         return parcel;
       });
+    case 'IMPORT_PARCEL':
+      return [...state, action.payload];
     default:
       return state;
   }
@@ -61,6 +63,13 @@ export const ParcelProvider = ({ children }) => {
     dispatch({
       type: 'UPDATE_STATUS',
       payload: { trackingNumber, newStatus, newLocation, operatorName, actionText }
+    });
+  };
+
+  const importParcel = (newParcel) => {
+    dispatch({
+      type: 'IMPORT_PARCEL',
+      payload: newParcel
     });
   };
 
@@ -116,6 +125,7 @@ export const ParcelProvider = ({ children }) => {
       getParcelByTracking,
       updateParcelStatus,
       moveParcel,
+      importParcel,
       searchParcels,
       getStats,
       getRecentActivity
