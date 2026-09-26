@@ -25,8 +25,8 @@ function generateSinglePDF(parcel) {
   // Header
   doc.setFillColor(41, 98, 255);
   doc.rect(0, 0, pageWidth, 40, 'F');
-  addThaiText(doc, 'ระบบจัดการคลังสินค้า', pageWidth / 2, 14, { fontSize: 18, fontWeight: 'bold', color: '#FFFFFF', align: 'center', maxWidth: pageWidth });
-  addThaiText(doc, 'รายงานข้อมูลพัสดุ', pageWidth / 2, 28, { fontSize: 12, color: '#E0E7FF', align: 'center', maxWidth: pageWidth });
+  addThaiText(doc, 'ระบบจัดการคลังสินค้า', pageWidth / 2, 14, { fontSize: 18, fontWeight: 'bold', color: '#FFFFFF', align: 'center' });
+  addThaiText(doc, 'รายงานข้อมูลพัสดุ', pageWidth / 2, 28, { fontSize: 12, color: '#E0E7FF', align: 'center' });
 
   // Tracking Number
   addThaiText(doc, `เลขพัสดุ: ${parcel.trackingNumber}`, 14, 52, { fontSize: 14, fontWeight: 'bold' });
@@ -100,7 +100,7 @@ function generateSinglePDF(parcel) {
   // Footer
   const footerY = doc.internal.pageSize.getHeight() - 12;
   addThaiText(doc, `สร้างเมื่อ: ${new Date().toLocaleString('th-TH')}`, 14, footerY, { fontSize: 7, color: '#999999' });
-  addThaiText(doc, 'WH Tracker - ระบบจัดการคลังสินค้า', pageWidth - 80, footerY, { fontSize: 7, color: '#999999' });
+  addThaiText(doc, 'WH Tracker - ระบบจัดการคลังสินค้า', pageWidth - 14, footerY, { fontSize: 7, color: '#999999', align: 'right' });
 
   doc.save(`parcel-${parcel.trackingNumber}.pdf`);
 }
@@ -112,8 +112,8 @@ function generateAllPDF(parcels) {
   // Header
   doc.setFillColor(41, 98, 255);
   doc.rect(0, 0, pageWidth, 32, 'F');
-  addThaiText(doc, 'ระบบจัดการคลังสินค้า - รายงานพัสดุทั้งหมด', pageWidth / 2, 12, { fontSize: 16, fontWeight: 'bold', color: '#FFFFFF', align: 'center', maxWidth: pageWidth });
-  addThaiText(doc, `ทั้งหมด ${parcels.length} รายการ | สร้างเมื่อ: ${new Date().toLocaleString('th-TH')}`, pageWidth / 2, 24, { fontSize: 9, color: '#E0E7FF', align: 'center', maxWidth: pageWidth });
+  addThaiText(doc, 'ระบบจัดการคลังสินค้า - รายงานพัสดุทั้งหมด', pageWidth / 2, 12, { fontSize: 16, fontWeight: 'bold', color: '#FFFFFF', align: 'center' });
+  addThaiText(doc, `ทั้งหมด ${parcels.length} รายการ | สร้างเมื่อ: ${new Date().toLocaleString('th-TH')}`, pageWidth / 2, 24, { fontSize: 9, color: '#E0E7FF', align: 'center' });
 
   let y = 42;
 
@@ -170,7 +170,7 @@ function generateAllPDF(parcels) {
   // Footer
   const footerY = doc.internal.pageSize.getHeight() - 8;
   addThaiText(doc, `สร้างเมื่อ: ${new Date().toLocaleString('th-TH')}`, 14, footerY, { fontSize: 7, color: '#999999' });
-  addThaiText(doc, 'WH Tracker - ระบบจัดการคลังสินค้า', pageWidth - 80, footerY, { fontSize: 7, color: '#999999' });
+  addThaiText(doc, 'WH Tracker - ระบบจัดการคลังสินค้า', pageWidth - 14, footerY, { fontSize: 7, color: '#999999', align: 'right' });
 
   doc.save(`all-parcels-report-${new Date().toISOString().slice(0, 10)}.pdf`);
 }

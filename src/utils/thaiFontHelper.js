@@ -49,10 +49,10 @@ export function addThaiText(doc, text, x, y, options = {}) {
   const finalImgHeight = (canvas.height / scale) * pxToMm;
 
   let finalX = x;
-  if (align === 'center' && maxWidth) {
-    finalX = x + (maxWidth - finalImgWidth) / 2;
-  } else if (align === 'right' && maxWidth) {
-    finalX = x + maxWidth - finalImgWidth;
+  if (align === 'center') {
+    finalX = x - (finalImgWidth / 2);
+  } else if (align === 'right') {
+    finalX = x - finalImgWidth;
   }
 
   // Adjust Y upward slightly to align visual baseline perfectly
