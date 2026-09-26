@@ -41,7 +41,7 @@ function generateSinglePDF(parcel) {
 
   const fields = [
     ['สถานะ', STATUS_LABELS[parcel.status] || parcel.status],
-    ['ระดับความสำคัญ', PRIORITY_LABELS[parcel.priority] || parcel.priority],
+    ['ความสำคัญ', PRIORITY_LABELS[parcel.priority] || parcel.priority],
     ['ผู้ส่ง', parcel.senderName],
     ['ที่อยู่ผู้ส่ง', parcel.senderAddress],
     ['ผู้รับ', parcel.recipientName],
@@ -59,7 +59,7 @@ function generateSinglePDF(parcel) {
       y = 20;
     }
     addThaiText(doc, `${label}:`, 14, y, { fontSize: 10, fontWeight: 'bold' });
-    addThaiText(doc, String(value || '-'), 70, y, { fontSize: 10 });
+    addThaiText(doc, String(value || '-'), 45, y, { fontSize: 10 });
     y += lineHeight;
   });
 
@@ -121,7 +121,7 @@ function generateAllPDF(parcels) {
     doc.setFillColor(240, 240, 240);
     doc.rect(10, y - 6, pageWidth - 20, 10, 'F');
     const headers = ['#', 'เลขพัสดุ', 'ผู้ส่ง', 'ผู้รับ', 'ตำแหน่ง', 'สถานะ', 'น้ำหนัก', 'หมวดหมู่', 'ระดับ', 'วันรับ'];
-    const xPositions = [12, 22, 60, 95, 130, 175, 205, 225, 250, 268];
+    const xPositions = [12, 22, 55, 90, 120, 160, 195, 215, 240, 260];
     headers.forEach((h, i) => {
       addThaiText(doc, h, xPositions[i], y, { fontSize: 7, fontWeight: 'bold' });
     });
@@ -143,7 +143,7 @@ function generateAllPDF(parcels) {
       doc.rect(10, y - 5, pageWidth - 20, 9, 'F');
     }
 
-    const xPositions = [12, 22, 60, 95, 130, 175, 205, 225, 250, 268];
+    const xPositions = [12, 22, 55, 90, 120, 160, 195, 215, 240, 260];
     const locationStr = parcel.location
       ? `โซน ${parcel.location.zone} - ${parcel.location.row}/${parcel.location.shelf}`
       : 'นำออกแล้ว';

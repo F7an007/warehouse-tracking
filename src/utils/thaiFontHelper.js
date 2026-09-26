@@ -1,7 +1,3 @@
-// Thai font helper for jsPDF
-// Since embedding a full Thai font as base64 is very large (~500KB+),
-// we use a workaround: render Thai text to canvas, then embed as image in PDF.
-
 export function addThaiText(doc, text, x, y, options = {}) {
   const {
     fontSize = 12,
@@ -11,52 +7,56 @@ export function addThaiText(doc, text, x, y, options = {}) {
     maxWidth = null
   } = options;
 
-  // Create an offscreen canvas
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
 
-  // Set font
-  const fontFamily = 'Sarabun, Noto Sans Thai, Tahoma, sans-serif';
-  ctx.font = `${fontWeight === 'bold' ? 'bold ' : ''}${fontSize * 2}px ${fontFamily}`;
+  // Use system fonts that guarantee perfect Thai rendering on Windows
+  const fontFamily = '"Tahoma", "Leelawadee UI", sans-serif';
+  
+  // High DPI scale for crisp PDF rendering
+  const scale = 4; 
+  
+  // Set font using 'pt' to match jsPDF sizing accurately
+  const fontString = `${fontWeight === 'bold' ? 'bold ' : ''}${fontSize * scale}pt ${fontFamily}`;
+  ctx.font = fontString;
 
-  // Measure text
   const textToRender = String(text || '-');
   const metrics = ctx.measureText(textToRender);
-  const textWidth = metrics.width;
-  const textHeight = fontSize * 2.4;
+  const textWidthPx = metrics.width;
+  
+  // Approximate height based on font size (1 pt = 1.333 px)
+  const textHeightPx = (fontSize * scale) * 1.5;
 
-  // Set canvas size
-  canvas.width = Math.ceil(textWidth) + 4;
-  canvas.height = Math.ceil(textHeight) + 4;
+  // Add padding to prevent clipping of tone marks (วรรณยุกต์)
+  canvas.width = Math.ceil(textWidthPx) + (10 * scale);
+  canvas.height = Math.ceil(textHeightPx) + (10 * scale);
 
-  // Clear and redraw with proper settings
+  // Context resets after canvas resize, re-apply styles
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.font = `${fontWeight === 'bold' ? 'bold ' : ''}${fontSize * 2}px ${fontFamily}`;
+  ctx.font = fontString;
   ctx.fillStyle = color;
   ctx.textBaseline = 'top';
-  ctx.fillText(textToRender, 0, 2);
+  
+  // Draw text with padding offset
+  ctx.fillText(textToRender, 2 * scale, 2 * scale);
 
-  // Convert to image and add to PDF
   const imgData = canvas.toDataURL('image/png');
-  const imgWidth = canvas.width / 2; // Scale back down
-  const imgHeight = canvas.height / 2;
+  
+  // Convert CSS pixels to jsPDF mm units
+  // 1 px = 0.264583 mm
+  const pxToMm = 0.264583;
+  const finalImgWidth = (canvas.width / scale) * pxToMm;
+  const finalImgHeight = (canvas.height / scale) * pxToMm;
 
   let finalX = x;
   if (align === 'center' && maxWidth) {
-    finalX = x + (maxWidth - imgWidth) / 2;
+    finalX = x + (maxWidth - finalImgWidth) / 2;
   } else if (align === 'right' && maxWidth) {
-    finalX = x + maxWidth - imgWidth;
+    finalX = x + maxWidth - finalImgWidth;
   }
 
-  doc.addImage(imgData, 'PNG', finalX, y - imgHeight * 0.65, imgWidth, imgHeight);
+  // Adjust Y upward slightly to align visual baseline perfectly
+  doc.addImage(imgData, 'PNG', finalX, y - (finalImgHeight * 0.15), finalImgWidth, finalImgHeight);
 
-  return { width: imgWidth, height: imgHeight };
-}
-
-export function getThaiTextWidth(text, fontSize = 12, fontWeight = 'normal') {
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-  const fontFamily = 'Sarabun, Noto Sans Thai, Tahoma, sans-serif';
-  ctx.font = `${fontWeight === 'bold' ? 'bold ' : ''}${fontSize * 2}px ${fontFamily}`;
-  return ctx.measureText(String(text || '-')).width / 2;
+  return { width: finalImgWidth, height: finalImgHeight };
 }
